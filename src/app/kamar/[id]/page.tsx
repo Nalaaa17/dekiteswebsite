@@ -8,9 +8,8 @@ import { id } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import type { Room } from "@prisma/client";
 
-import { createBookingWithPolar } from "@/lib/auctions/booking";
+import { createBookingWithPolar } from "@/lib/actions/booking";
 import { addToCart } from "@/lib/actions/cart";
 import { getRoomById } from "@/lib/actions/rooms";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ export default function RoomDetail({ params }: { params: Promise<{ id: string }>
     const { data: session } = authClient.useSession();
 
     // Data State
-    const [room, setRoom] = useState<Room | null>(null);
+    const [room, setRoom] = useState<any | null>(null);
     const [pageLoading, setPageLoading] = useState(true);
 
     // Booking States
@@ -132,7 +131,9 @@ export default function RoomDetail({ params }: { params: Promise<{ id: string }>
 
     if (!room) return null;
 
-    const imagesArray = room.images.length > 0 ? room.images : ["https://images.unsplash.com/photo-1505691938895-1758d7eaa511?q=80&w=1200&auto=format&fit=crop"];
+    const imagesArray: string[] = room.images && room.images.length > 0
+        ? room.images
+        : ["https://images.unsplash.com/photo-1505691938895-1758d7eaa511?q=80&w=1200&auto=format&fit=crop"];
 
     // Calculate dates
     const checkOutDate = addMonths(checkIn, durationMonths);
@@ -146,7 +147,7 @@ export default function RoomDetail({ params }: { params: Promise<{ id: string }>
             <div className="relative w-full h-[60vh] md:h-[75vh] mt-20 group bg-slate-900">
                 <Carousel opts={{ loop: true }} className="w-full h-full">
                     <CarouselContent className="h-full ml-0">
-                        {imagesArray.map((img, idx) => (
+                        {imagesArray.map((img: string, idx: number) => (
                             <CarouselItem key={idx} className="h-full pl-0 relative">
                                 <img
                                     src={img}

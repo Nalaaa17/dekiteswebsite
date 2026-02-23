@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CalendarDays, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { cancelBooking, forceConfirmLocal } from "@/lib/auctions/booking";
+import { cancelBooking, forceConfirmLocal } from "@/lib/actions/booking";
 import { toast } from "sonner";
 
 export default function BookingCard({ booking }: { booking: any }) {
