@@ -1,0 +1,93 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// --- Tabel untuk Autentikasi (Better Auth) ---
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          String    @default("user") // "user" atau "admin"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  bookings      Booking[]
+  carts         Cart[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+}
+
+// --- Tabel Khusus Bisnis Kost De'Kites ---
+model Room {
+  id          String   @id @default(cuid())
+  name        String   // Contoh: "Deluxe Suite"
+  description String   // Detail fasilitas
+  price       Int      // Harga per bulan
+  stock       Int      @default(1)
+  images      String[] // Array URL gambar
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  bookings    Booking[]
+  carts       Cart[]
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  userId    String
+  roomId    String
+  checkIn   DateTime
+  checkOut  DateTime
+  total     Int
+  ktpName   String?
+  ktpNumber String?
+  status       String   @default("Pending") // Pending, Dikonfirmasi, Dibatalkan
+  cancelReason String?
+  createdAt    DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  room      Room     @relation(fields: [roomId], references: [id])
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String
+  roomId    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}

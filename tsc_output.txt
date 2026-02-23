@@ -1,0 +1,5 @@
+﻿src/app/api/webhooks/polar/route.ts(2,10): error TS2305: Module '"@polar-sh/sdk/webhooks"' has no exported member 'Webhook'.
+src/lib/auctions/booking.ts(19,13): error TS2322: Type '{ userId: string; roomId: string; total: number; status: string; }' is not assignable to type '(Without<BookingCreateInput, BookingUncheckedCreateInput> & BookingUncheckedCreateInput) | (Without<...> & BookingCreateInput)'.
+  Type '{ userId: string; roomId: string; total: number; status: string; }' is not assignable to type 'Without<BookingCreateInput, BookingUncheckedCreateInput> & BookingUncheckedCreateInput'.
+    Type '{ userId: string; roomId: string; total: number; status: string; }' is missing the following properties from type 'BookingUncheckedCreateInput': checkIn, checkOut
+src/lib/auctions/booking.ts(29,13): error TS2353: Object literal may only specify known properties, and 'productPriceId' does not exist in type 'CheckoutCreate'.

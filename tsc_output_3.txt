@@ -1,0 +1,2 @@
+﻿src/app/kamar/[id]/page.tsx(7,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+src/app/kamar/[id]/page.tsx(8,20): error TS2307: Cannot find module 'date-fns/locale' or its corresponding type declarations.
