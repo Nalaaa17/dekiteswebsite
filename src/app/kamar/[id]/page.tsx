@@ -8,7 +8,7 @@ import { id } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { Room } from "@prisma/client";
+import type { Room } from "@prisma/client";
 
 import { createBookingWithPolar } from "@/lib/auctions/booking";
 import { addToCart } from "@/lib/actions/cart";
