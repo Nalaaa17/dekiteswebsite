@@ -1,18 +1,16 @@
 "use server";
 
-import { Prisma } from "@prisma/client"; // <--- TAMBAHAN IMPORT PRISMA
 import { prisma } from "@/lib/auth";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { Polar } from "@polar-sh/sdk";
 import { Resend } from "resend";
 
-
 const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy");
 
 const polar = new Polar({
     accessToken: process.env.POLAR_ACCESS_TOKEN || "",
-    server: "sandbox", // <--- 1. TAMBAHKAN BARIS INI UNTUK MODE SANDBOX
+    server: "sandbox",
 });
 
 export async function createBookingWithPolar(roomId: string, amount: number, ktpName: string, ktpNumber: string, fromCartId?: string) {
@@ -23,14 +21,13 @@ export async function createBookingWithPolar(roomId: string, amount: number, ktp
         const room = await prisma.room.findUnique({ where: { id: roomId } });
         if (!room) return { success: false, message: "Kamar tidak ditemukan" };
 
-        // If not from cart, ensure there's enough stock to decrement
         if (!fromCartId && room.stock < 1) {
             return { success: false, message: "Stok kamar habis" };
         }
 
         // 1. Transaction to handle booking + stock logic
-        // <--- TAMBAHAN TIPE DATA PADA 'tx' DI BAWAH INI --->
-        const [booking] = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        // Kita gunakan (tx: any) untuk memaksa Next.js build worker agar diam
+        const [booking] = await prisma.$transaction(async (tx: any) => {
             const newBooking = await tx.booking.create({
                 data: {
                     userId: session.user.id,
@@ -45,10 +42,8 @@ export async function createBookingWithPolar(roomId: string, amount: number, ktp
             });
 
             if (fromCartId) {
-                // Hapus dari keranjang. Stok TETAP KARENA saat di keranjang stok sudah dikurangi.
                 await tx.cart.delete({ where: { id: fromCartId } }).catch(() => { });
             } else {
-                // Booking langsung tanpa keranjang -> kurangi stok.
                 await tx.room.update({
                     where: { id: roomId },
                     data: { stock: { decrement: 1 } }
@@ -61,11 +56,11 @@ export async function createBookingWithPolar(roomId: string, amount: number, ktp
         // 2. Buat Checkout di Polar
         const result = await polar.checkouts.create({
             amount: amount,
-            products: ["362e0441-90a8-4116-8075-4877759cd324"], // ID Produk dari dashboard Polar kamu
+            products: ["362e0441-90a8-4116-8075-4877759cd324"],
             successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/pesanan`,
             customerEmail: session.user.email,
             metadata: {
-                bookingId: booking.id, // ID ini penting untuk Webhook nanti
+                bookingId: booking.id,
             },
         });
 
