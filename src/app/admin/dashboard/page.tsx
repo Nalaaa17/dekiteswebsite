@@ -488,7 +488,7 @@ export default function AdminDashboard() {
                                             <Tooltip
                                                 contentStyle={{ backgroundColor: '#020617', borderColor: '#1e293b', borderRadius: '4px', fontSize: '12px' }}
                                                 itemStyle={{ color: '#10b981', fontWeight: 'bold' }}
-                                                formatter={(value: number) => [`Rp ${value.toLocaleString("id-ID")}`, "Pendapatan"]}
+                                                formatter={(value: any) => [`Rp ${Number(value).toLocaleString("id-ID")}`, "Pendapatan"]}
                                                 labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
                                             />
                                             <Area type="monotone" dataKey="total" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />

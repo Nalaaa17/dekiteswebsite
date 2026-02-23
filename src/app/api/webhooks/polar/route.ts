@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/auth";
-import { Webhook } from "@polar-sh/sdk/webhooks";
+import { validateEvent } from "@polar-sh/sdk/webhooks";
 import { Resend } from "resend"; // 1. Import Resend
 
 // Inisialisasi Resend
@@ -7,17 +7,21 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
     const body = await req.text();
-    const signature = req.headers.get("polar-signature") || "";
 
     try {
-        const event = Webhook.verify(
+        const headersObject: Record<string, string> = {};
+        req.headers.forEach((value, key) => {
+            headersObject[key] = value;
+        });
+
+        const event = validateEvent(
             body,
-            signature,
+            headersObject,
             process.env.POLAR_WEBHOOK_SECRET!
         );
 
         if (event.type === "checkout.updated" && event.data.status === "succeeded") {
-            const bookingId = event.data.metadata.bookingId;
+            const bookingId = event.data.metadata.bookingId as string;
 
             // 2. Update status dan AMBIL data user + kamar sekaligus
             const updatedBooking = await prisma.booking.update({
