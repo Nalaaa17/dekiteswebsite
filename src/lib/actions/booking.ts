@@ -1,10 +1,12 @@
 "use server";
 
+import { Prisma } from "@prisma/client"; // <--- TAMBAHAN IMPORT PRISMA
 import { prisma } from "@/lib/auth";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { Polar } from "@polar-sh/sdk";
 import { Resend } from "resend";
+
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy");
 
@@ -27,7 +29,8 @@ export async function createBookingWithPolar(roomId: string, amount: number, ktp
         }
 
         // 1. Transaction to handle booking + stock logic
-        const [booking] = await prisma.$transaction(async (tx) => {
+        // <--- TAMBAHAN TIPE DATA PADA 'tx' DI BAWAH INI --->
+        const [booking] = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             const newBooking = await tx.booking.create({
                 data: {
                     userId: session.user.id,
