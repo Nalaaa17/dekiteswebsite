@@ -71,7 +71,7 @@ export async function updateBookingStatus(bookingId: string, newStatus: string) 
         });
         if (!booking) throw new Error("Booking tidak ditemukan");
 
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (tx: any) => {
             await tx.booking.update({
                 where: { id: bookingId },
                 data: { status: newStatus }
